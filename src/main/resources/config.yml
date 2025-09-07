@@ -1,0 +1,50 @@
+charge:
+  mob-blacklist:
+  drop-percentage: 5
+  looting-bonus-percentage: 2
+  boss-mob-list:
+    - ender_dragon
+    - warden
+    - wither
+  boss-drop-percentage: 100
+  boss-drop-amount: 10
+  player-damage-req: true
+  anti-farm: true
+  drops-per-chunk-per-hour: 15
+  worlds:
+    - world
+    - world_nether
+    - world_the_end
+    - resource_world
+    - resource_nether
+  item:
+    material: AMETHYST_SHARD
+    name: "Teleport Charge"
+# Camp Structure Settings
+camp:
+  structure:
+    enabled: true
+    place-campfire: true
+    place-tent: true
+    require-clear-space: true
+    tent-material: "WHITE_WOOL"
+    bed-color: "RED"
+    allow-owner-break: false
+token:
+  activate-waypoint-cost: 3
+  drop-percentage: 0.005
+teleport:
+  wait-time: 120
+  particle-effect: null
+  teleport-waypoint-cost: 1
+  inter-world-cost: 2
+world:
+  home:
+    - world
+  camp:
+    - resource_world
+    - resource_nether
+  waypoint:
+    - world
+    - world_nether
+    - world_the_end

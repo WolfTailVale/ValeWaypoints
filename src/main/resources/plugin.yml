@@ -1,0 +1,59 @@
+main: ${main}
+name: ${name}
+version: ${version}
+description: ${description}
+api-version: ${apiVersion}
+authors: ${authors}
+website: ${website}
+depend: ${depend}
+prefix: ${prefix}
+
+commands:
+  waypoints:
+    usage: /waypoints [create | removetoken | setcamp | sethome | teleport | wallet]
+    permission: waypoints.player
+  editwaypoints:
+    usage: /editwaypoints [activate | delete | menu | unsetcamps | unsethomes | replacebanner | reposition]
+    permission: waypoints.staff
+  setcamp:
+    usage: /setcamp
+    permission: waypoints.player
+    description: Shortcut to set your camp location
+  camp:
+    usage: /camp
+    permission: waypoints.player  
+    description: Teleport to your camp
+  sethome:
+    usage: /sethome
+    permission: waypoints.player
+    description: Shortcut to set your home location
+  home:
+    usage: /home
+    permission: waypoints.player
+    description: Teleport to your home
+  unsetcamp:
+    usage: /unsetcamp
+    permission: waypoints.player
+    description: Remove your camp location
+  reloadwaypoints:
+    usage: /reloadwaypoints
+    permission: waypoints.staff
+    description: Reload the waypoints configuration
+  registerbanner:
+    usage: /registerbanner
+    permission: waypoints.player
+    description: Register the banner you're holding as your camp banner design
+  givewptoken:
+    usage: /givewptoken [amount]
+    permission: waypoints.staff
+    description: Give yourself waypoint tokens
+  givewpcharge:
+    usage: /givewpcharge [amount]
+    permission: waypoints.staff
+    description: Give yourself teleport charges
+
+permissions:
+  waypoints.player:
+    default: true
+  waypoints.staff:
+    default: op

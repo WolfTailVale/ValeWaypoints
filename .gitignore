@@ -1,0 +1,13 @@
+.idea/
+.vscode/
+*.code-workspace
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+.gradle/
+bin/
+build/
+run/
+target/
+ProtocolLib.jar
+examples/
