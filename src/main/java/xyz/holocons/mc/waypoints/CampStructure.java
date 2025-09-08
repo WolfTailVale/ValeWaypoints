@@ -21,6 +21,15 @@ public class CampStructure {
         this.placedBlocks = new ArrayList<>();
     }
 
+    /**
+     * Creates a CampStructure from saved data (used when loading from file)
+     */
+    public static CampStructure fromSavedData(WaypointsPlugin plugin, java.util.UUID ownerId, List<Location> structureBlocks) {
+        CampStructure structure = new CampStructure(plugin, ownerId);
+        structure.placedBlocks.addAll(structureBlocks);
+        return structure;
+    }
+
     public java.util.UUID getOwnerId() {
         return ownerId;
     }
@@ -276,6 +285,17 @@ public class CampStructure {
     }
 
     private Material getTentMaterial() {
+        // Prefer color from player's registered banner base color
+        DyeColor color = getBannerBaseColor();
+        if (color != null) {
+            try {
+                return Material.valueOf(color.name() + "_WOOL");
+            } catch (IllegalArgumentException ignored) {
+                // Fall through to config/default
+            }
+        }
+
+        // Fallback to config for compatibility
         String materialName = plugin.getConfig().getString("camp.structure.tent-material", "WHITE_WOOL");
         try {
             return Material.valueOf(materialName.toUpperCase());
@@ -286,13 +306,44 @@ public class CampStructure {
     }
 
     private Material getBedMaterial() {
+        // Prefer color from player's registered banner base color
+        DyeColor color = getBannerBaseColor();
+        if (color != null) {
+            try {
+                return Material.valueOf(color.name() + "_BED");
+            } catch (IllegalArgumentException ignored) {
+                // Fall through to config/default
+            }
+        }
+
+        // Fallback to config for compatibility
         String colorName = plugin.getConfig().getString("camp.structure.bed-color", "RED");
         try {
-            DyeColor color = DyeColor.valueOf(colorName.toUpperCase());
-            return Material.valueOf(color.name() + "_BED");
+            DyeColor parsed = DyeColor.valueOf(colorName.toUpperCase());
+            return Material.valueOf(parsed.name() + "_BED");
         } catch (IllegalArgumentException e) {
             plugin.getLogger().warning("Invalid bed color: " + colorName + ", using RED_BED");
             return Material.RED_BED;
+        }
+    }
+
+    /**
+     * Determine the base color from the player's registered banner material.
+     * Example: BLACK_BANNER -> DyeColor.BLACK
+     */
+    private DyeColor getBannerBaseColor() {
+        try {
+            var design = plugin.getCampBannerMap().getPlayerBannerDesign(ownerId);
+            if (design == null) return null;
+            Material mat = design.getMaterial();
+            if (mat == null) return null;
+            String name = mat.name();
+            if (!name.endsWith("_BANNER")) return null;
+            String colorName = name.substring(0, name.length() - "_BANNER".length());
+            return DyeColor.valueOf(colorName);
+        } catch (Exception e) {
+            // Any parsing issues fall back to config/defaults
+            return null;
         }
     }
 

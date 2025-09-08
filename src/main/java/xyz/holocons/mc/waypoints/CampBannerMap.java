@@ -120,6 +120,7 @@ public class CampBannerMap {
      */
     public void clear() {
         campBanners.clear();
+        campStructures.clear();
         playerBannerDesigns.clear();
     }
 
@@ -147,6 +148,25 @@ public class CampBannerMap {
                 writer.writeLocation(entry.getKey());
                 writer.name("owner");
                 writer.writeUUID(entry.getValue());
+                writer.endObject();
+            }
+            writer.endArray();
+
+            // Save camp structures
+            writer.name("campStructures");
+            writer.beginArray();
+            for (Map.Entry<Location, CampStructure> entry : campStructures.entrySet()) {
+                writer.beginObject();
+                writer.name("bannerLocation");
+                writer.writeLocation(entry.getKey());
+                writer.name("ownerId");
+                writer.writeUUID(entry.getValue().getOwnerId());
+                writer.name("structureBlocks");
+                writer.beginArray();
+                for (Location blockLoc : entry.getValue().getStructureBlocks()) {
+                    writer.writeLocation(blockLoc);
+                }
+                writer.endArray();
                 writer.endObject();
             }
             writer.endArray();
@@ -202,6 +222,38 @@ public class CampBannerMap {
 
                             if (location != null && owner != null) {
                                 campBanners.put(location, owner);
+                            }
+                        }
+                        reader.endArray();
+                    }
+                    case "campStructures" -> {
+                        reader.beginArray();
+                        while (reader.hasNext()) {
+                            reader.beginObject();
+                            Location bannerLocation = null;
+                            UUID ownerId = null;
+                            java.util.List<Location> structureBlocks = new java.util.ArrayList<>();
+
+                            while (reader.hasNext()) {
+                                switch (reader.nextName()) {
+                                    case "bannerLocation" -> bannerLocation = reader.readLocation();
+                                    case "ownerId" -> ownerId = reader.readUUID();
+                                    case "structureBlocks" -> {
+                                        reader.beginArray();
+                                        while (reader.hasNext()) {
+                                            structureBlocks.add(reader.readLocation());
+                                        }
+                                        reader.endArray();
+                                    }
+                                    default -> reader.skipValue();
+                                }
+                            }
+                            reader.endObject();
+
+                            if (bannerLocation != null && ownerId != null && !structureBlocks.isEmpty()) {
+                                // Create a CampStructure from saved data
+                                CampStructure structure = CampStructure.fromSavedData(plugin, ownerId, structureBlocks);
+                                campStructures.put(bannerLocation, structure);
                             }
                         }
                         reader.endArray();
