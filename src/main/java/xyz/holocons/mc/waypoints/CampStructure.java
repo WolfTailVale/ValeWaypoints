@@ -24,7 +24,8 @@ public class CampStructure {
     /**
      * Creates a CampStructure from saved data (used when loading from file)
      */
-    public static CampStructure fromSavedData(WaypointsPlugin plugin, java.util.UUID ownerId, List<Location> structureBlocks) {
+    public static CampStructure fromSavedData(WaypointsPlugin plugin, java.util.UUID ownerId,
+            List<Location> structureBlocks) {
         CampStructure structure = new CampStructure(plugin, ownerId);
         structure.placedBlocks.addAll(structureBlocks);
         return structure;
@@ -334,11 +335,14 @@ public class CampStructure {
     private DyeColor getBannerBaseColor() {
         try {
             var design = plugin.getCampBannerMap().getPlayerBannerDesign(ownerId);
-            if (design == null) return null;
+            if (design == null)
+                return null;
             Material mat = design.getMaterial();
-            if (mat == null) return null;
+            if (mat == null)
+                return null;
             String name = mat.name();
-            if (!name.endsWith("_BANNER")) return null;
+            if (!name.endsWith("_BANNER"))
+                return null;
             String colorName = name.substring(0, name.length() - "_BANNER".length());
             return DyeColor.valueOf(colorName);
         } catch (Exception e) {

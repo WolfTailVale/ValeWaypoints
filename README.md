@@ -19,6 +19,7 @@ Originally developed for the Hololive Construction Minecraft server by Derek Lee
 - **Smart teleport costs**: Different costs for same-world vs inter-world teleports
 - **Anti-farming**: Prevents excessive charge farming with per-chunk limits
 - **Rare token drops**: Small chance for waypoint tokens to drop from any mob
+- **Echo Shard drops**: Wardens have a 95% chance to drop Echo Shards and a 5% chance to drop 5.
 
 ## Installation
 

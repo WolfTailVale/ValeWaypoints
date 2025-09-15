@@ -30,6 +30,13 @@ camp:
     tent-material: "WHITE_WOOL"
     bed-color: "RED"
     allow-owner-break: false
+warden:
+  # Warden drops both echo shards (below) AND teleport charges (from boss-mob-list)
+  echo-shard-drops:
+    enabled: true
+    high-drop-chance: 5.0  # 5% chance
+    high-drop-amount: 5    # 5 echo shards
+    low-drop-amount: 2     # 2 echo shards (remaining 95%)
 token:
   activate-waypoint-cost: 3
   drop-percentage: 0.005

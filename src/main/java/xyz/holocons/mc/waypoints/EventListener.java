@@ -204,10 +204,20 @@ public final class EventListener implements Listener {
             final var ownerId = entry.getValue();
 
             // Check if this camp banner is in the loaded chunk
-            if (location.getChunk().equals(chunk)) {
-                final var ownerName = Bukkit.getOfflinePlayer(ownerId).getName();
-                final var tempWaypoint = new CampWaypoint(location, ownerName + "'s Camp");
-                hologramMap.show(tempWaypoint, player);
+            // Add safety check to prevent chunk access during shutdown
+            try {
+                if (location.getWorld() == null || !location.getWorld().equals(chunk.getWorld())) {
+                    continue;
+                }
+
+                if (location.getChunk().equals(chunk)) {
+                    final var ownerName = Bukkit.getOfflinePlayer(ownerId).getName();
+                    final var tempWaypoint = new CampWaypoint(location, ownerName + "'s Camp");
+                    hologramMap.show(tempWaypoint, player);
+                }
+            } catch (IllegalStateException e) {
+                // Chunk system has shut down, skip this camp banner
+                continue;
             }
         }
     }
@@ -493,6 +503,32 @@ public final class EventListener implements Listener {
         final var blacklist = cfg.getStringList("charge.mob-blacklist");
         if (blacklist != null && blacklist.contains(type.name().toLowerCase()))
             return;
+
+        // Handle Warden echo shard drops (process first, then allow boss drops)
+        if (type == org.bukkit.entity.EntityType.WARDEN) {
+            // Check if echo shard drops are enabled
+            if (cfg.getBoolean("warden.echo-shard-drops.enabled", true)) {
+                final double highDropChance = cfg.getDouble("warden.echo-shard-drops.high-drop-chance", 5.0);
+                final int highDropAmount = cfg.getInt("warden.echo-shard-drops.high-drop-amount", 5);
+                final int lowDropAmount = cfg.getInt("warden.echo-shard-drops.low-drop-amount", 2);
+
+                final double roll = Math.random() * 100;
+                int echoShardAmount;
+
+                if (roll <= highDropChance) {
+                    echoShardAmount = highDropAmount;
+                } else {
+                    echoShardAmount = lowDropAmount;
+                }
+
+                // Drop echo shards
+                final var location = event.getEntity().getLocation();
+                final var itemStack = new org.bukkit.inventory.ItemStack(Material.ECHO_SHARD, echoShardAmount);
+                location.getWorld().dropItemNaturally(location, itemStack);
+            }
+
+            // Continue to boss drops for teleport charges (don't return early)
+        }
 
         // Handle boss drops
         final var bossList = cfg.getStringList("charge.boss-mob-list");
